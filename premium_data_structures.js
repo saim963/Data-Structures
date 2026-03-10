@@ -1574,7 +1574,7 @@ function openDetails(data) {
 
             <h3>Practical Applications</h3>
             <ul class="apps-list">
-                ${metadata.applications.map(app => `<li>${app}</li>`).join('')}
+                ${(metadata.applications || []).map(app => `<li>${app}</li>`).join('')}
             </ul>
 
             <h3>Category</h3>
@@ -1713,12 +1713,18 @@ function initGraph() {
         .text(d => d.data.name);
 
     // Center the tree initially
-    const initialTransform = d3.zoomIdentity.translate(100, 0).scale(0.8);
+    const isMobile = width < 768;
+    const initialScale = isMobile ? 0.6 : 0.8;
+    const initialTranslateX = isMobile ? 40 : 100;
+    const initialTransform = d3.zoomIdentity.translate(initialTranslateX, 20).scale(initialScale);
     svg.call(d3.zoom().transform, initialTransform);
 }
 
 // --- View Switching ---
 function switchView(viewName) {
+    // Close details when switching views to prevent covering content on mobile
+    closeDetails();
+    
     document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.controls button').forEach(el => el.classList.remove('active'));
 
